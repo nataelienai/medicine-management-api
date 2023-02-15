@@ -1,0 +1,4 @@
+CREATE TABLE adverse_reaction (
+  id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  description TEXT NOT NULL
+);
