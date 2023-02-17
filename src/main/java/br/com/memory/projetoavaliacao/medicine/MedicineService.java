@@ -25,18 +25,18 @@ public class MedicineService {
     return medicineRepository.findAll();
   }
 
-  public Medicine create(MedicineDto medicineDto) {
-    ensureRegistrationNumberIsUnique(medicineDto.getRegistrationNumber());
-    Manufacturer manufacturer = findManufacturerById(medicineDto.getManufacturerId());
-    Set<AdverseReaction> adverseReactions = findAdverseReactionsByIds(medicineDto.getAdverseReactionIds());
+  public Medicine create(MedicineCreationDto medicineCreationDto) {
+    ensureRegistrationNumberIsUnique(medicineCreationDto.getRegistrationNumber());
+    Manufacturer manufacturer = findManufacturerById(medicineCreationDto.getManufacturerId());
+    Set<AdverseReaction> adverseReactions = findAdverseReactionsByIds(medicineCreationDto.getAdverseReactionIds());
 
     Medicine medicine = new Medicine(
-        medicineDto.getRegistrationNumber(),
-        medicineDto.getName(),
-        medicineDto.getExpirationDate(),
-        medicineDto.getCustomerServicePhone(),
-        medicineDto.getPrice(),
-        medicineDto.getAmountOfPills(),
+        medicineCreationDto.getRegistrationNumber(),
+        medicineCreationDto.getName(),
+        medicineCreationDto.getExpirationDate(),
+        medicineCreationDto.getCustomerServicePhone(),
+        medicineCreationDto.getPrice(),
+        medicineCreationDto.getAmountOfPills(),
         manufacturer,
         adverseReactions);
 

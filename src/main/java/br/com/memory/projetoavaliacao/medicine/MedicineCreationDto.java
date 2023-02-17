@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MedicineDto {
+public class MedicineCreationDto {
   private String registrationNumber;
   private String name;
   private LocalDate expirationDate;
