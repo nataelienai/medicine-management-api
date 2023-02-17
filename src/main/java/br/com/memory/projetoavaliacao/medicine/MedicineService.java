@@ -68,4 +68,26 @@ public class MedicineService {
 
     return new HashSet<>(adverseReactions);
   }
+
+  public Medicine update(String registrationNumber, MedicineUpdateDto medicineUpdateDto) {
+    Medicine medicine = findMedicineByRegistrationNumber(registrationNumber);
+    Manufacturer manufacturer = findManufacturerById(medicineUpdateDto.getManufacturerId());
+    Set<AdverseReaction> adverseReactions = findAdverseReactionsByIds(medicineUpdateDto.getAdverseReactionIds());
+
+    medicine.setName(medicineUpdateDto.getName());
+    medicine.setExpirationDate(medicineUpdateDto.getExpirationDate());
+    medicine.setCustomerServicePhone(medicineUpdateDto.getCustomerServicePhone());
+    medicine.setPrice(medicineUpdateDto.getPrice());
+    medicine.setAmountOfPills(medicineUpdateDto.getAmountOfPills());
+    medicine.setManufacturer(manufacturer);
+    medicine.setAdverseReactions(adverseReactions);
+
+    return medicineRepository.save(medicine);
+  }
+
+  private Medicine findMedicineByRegistrationNumber(String registrationNumber) {
+    return medicineRepository.findById(registrationNumber)
+        .orElseThrow(() -> new ResourceNotFoundException(
+            String.format("Medicine with registration number %s not found", registrationNumber)));
+  }
 }
