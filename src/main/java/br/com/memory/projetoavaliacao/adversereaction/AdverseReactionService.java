@@ -1,5 +1,7 @@
 package br.com.memory.projetoavaliacao.adversereaction;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import br.com.memory.projetoavaliacao.medicine.MedicineRepository;
@@ -12,6 +14,10 @@ import lombok.AllArgsConstructor;
 public class AdverseReactionService {
   private final AdverseReactionRepository adverseReactionRepository;
   private final MedicineRepository medicineRepository;
+
+  public List<AdverseReaction> findAll() {
+    return adverseReactionRepository.findAll();
+  }
 
   public AdverseReaction create(AdverseReactionDto adverseReactionDto) {
     AdverseReaction adverseReaction = new AdverseReaction(
