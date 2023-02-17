@@ -90,4 +90,9 @@ public class MedicineService {
         .orElseThrow(() -> new ResourceNotFoundException(
             String.format("Medicine with registration number %s not found", registrationNumber)));
   }
+
+  public void deleteByRegistrationNumber(String registrationNumber) {
+    Medicine medicine = findMedicineByRegistrationNumber(registrationNumber);
+    medicineRepository.delete(medicine);
+  }
 }
