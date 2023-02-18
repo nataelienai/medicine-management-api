@@ -1,7 +1,7 @@
 package br.com.memory.projetoavaliacao.manufacturer;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 public class ManufacturerService {
   private final ManufacturerRepository manufacturerRepository;
 
-  public List<Manufacturer> findAll() {
-    return manufacturerRepository.findAll();
+  public Page<Manufacturer> findAllBy(String name, Pageable pageable) {
+    return manufacturerRepository.findAllBy(name, pageable);
   }
 }
