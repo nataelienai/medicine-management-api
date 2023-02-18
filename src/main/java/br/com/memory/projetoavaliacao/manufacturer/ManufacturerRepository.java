@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long> {
-  @Query(value = "SELECT * FROM manufacturer m WHERE m.name ILIKE %:name%", nativeQuery = true)
+  @Query("FROM Manufacturer m WHERE :name IS NULL OR LOWER(m.name) LIKE CONCAT('%', LOWER(:name), '%')")
   public Page<Manufacturer> findAllBy(String name, Pageable pageable);
 }
