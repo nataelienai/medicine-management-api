@@ -8,6 +8,9 @@ import javax.validation.ConstraintValidatorContext;
 public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, String> {
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {
+    if (value == null) {
+      return false;
+    }
     return Pattern.matches("^\\(\\d{2}\\)\\d{4}-\\d{4}$", value);
   }
 }
