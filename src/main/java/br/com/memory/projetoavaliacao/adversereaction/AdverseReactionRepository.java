@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdverseReactionRepository extends JpaRepository<AdverseReaction, Long> {
-  @Query(value = "SELECT * FROM adverse_reaction ar WHERE ar.description ILIKE %:description%", nativeQuery = true)
+  @Query("FROM AdverseReaction ar WHERE :description IS NULL OR LOWER(ar.description) LIKE CONCAT('%', LOWER(:description), '%')")
   public Page<AdverseReaction> findAllBy(String description, Pageable pageable);
 }
