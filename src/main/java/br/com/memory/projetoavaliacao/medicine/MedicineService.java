@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReaction;
@@ -21,8 +23,8 @@ public class MedicineService {
   private final ManufacturerRepository manufacturerRepository;
   private final AdverseReactionRepository adverseReactionRepository;
 
-  public List<Medicine> findAll() {
-    return medicineRepository.findAll();
+  public Page<Medicine> findAllBy(String registrationNumber, String name, Pageable pageable) {
+    return medicineRepository.findAllBy(registrationNumber, name, pageable);
   }
 
   public Medicine create(MedicineCreationDto medicineCreationDto) {
