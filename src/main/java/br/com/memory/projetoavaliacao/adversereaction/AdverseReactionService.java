@@ -1,7 +1,7 @@
 package br.com.memory.projetoavaliacao.adversereaction;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.memory.projetoavaliacao.medicine.MedicineRepository;
@@ -15,8 +15,8 @@ public class AdverseReactionService {
   private final AdverseReactionRepository adverseReactionRepository;
   private final MedicineRepository medicineRepository;
 
-  public List<AdverseReaction> findAll() {
-    return adverseReactionRepository.findAll();
+  public Page<AdverseReaction> findAllBy(String description, Pageable pageable) {
+    return adverseReactionRepository.findAllBy(description, pageable);
   }
 
   public AdverseReaction create(AdverseReactionDto adverseReactionDto) {
