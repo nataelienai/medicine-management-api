@@ -44,6 +44,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(JsonMappingException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleException(JsonMappingException exception) {
+    Throwable cause = exception.getCause();
+
+    if (cause instanceof InvalidDateFormatException) {
+      return handleException((InvalidDateFormatException) cause);
+    }
+
     Reference pathReference = exception.getPath().get(0);
     int statusCode = HttpStatus.BAD_REQUEST.value();
 
