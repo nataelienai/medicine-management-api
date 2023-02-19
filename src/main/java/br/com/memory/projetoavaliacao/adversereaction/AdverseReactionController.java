@@ -66,9 +66,26 @@ public class AdverseReactionController {
     return adverseReactionService.create(adverseReactionDto);
   }
 
+  @Operation(
+    summary = "Update adverse reaction",
+    description = "Update an adverse reaction by its id and returns it.",
+    responses = {
+      @ApiResponse(responseCode = "200", description = "Operation succeeded"),
+      @ApiResponse(
+        responseCode = "400",
+        description = "Invalid request body",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(
+        responseCode = "404",
+        description = "Adverse reaction not found",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    }
+  )
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  public AdverseReaction update(@PathVariable Long id, @Valid @RequestBody AdverseReactionDto adverseReactionDto) {
+  public AdverseReaction update(
+      @Parameter(description = "Id of the adverse reaction to be updated") @PathVariable Long id,
+      @Valid @RequestBody AdverseReactionDto adverseReactionDto) {
     return adverseReactionService.update(id, adverseReactionDto);
   }
 
