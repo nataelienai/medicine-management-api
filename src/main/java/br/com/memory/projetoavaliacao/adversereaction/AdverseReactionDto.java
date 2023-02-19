@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdverseReactionDto {
-  @NotBlank(message = "description must not be blank")
+  @NotBlank(message = "The description field must not be blank")
   private String description;
 }

@@ -50,7 +50,7 @@ public class MedicineService {
 
     if (registrationNumberExists) {
       throw new ResourceAlreadyExistsException(
-          String.format("Medicine with registration number %s already exists", registrationNumber));
+          String.format("A medicine with registration number %s already exists", registrationNumber));
     }
   }
 
