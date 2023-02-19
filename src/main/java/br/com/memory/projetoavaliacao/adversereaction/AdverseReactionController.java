@@ -89,9 +89,25 @@ public class AdverseReactionController {
     return adverseReactionService.update(id, adverseReactionDto);
   }
 
+  @Operation(
+    summary = "Delete adverse reaction by id",
+    description = "Delete an adverse reaction by its id.",
+    responses = {
+      @ApiResponse(responseCode = "204", description = "Operation succeeded"),
+      @ApiResponse(
+        responseCode = "404",
+        description = "Adverse reaction not found",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(
+        responseCode = "409",
+        description = "Adverse reaction linked to a medicine",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    }
+  )
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteById(@PathVariable Long id) {
+  public void deleteById(
+      @Parameter(description = "Id of the adverse reaction to be deleted") @PathVariable Long id) {
     adverseReactionService.deleteById(id);
   }
 }
