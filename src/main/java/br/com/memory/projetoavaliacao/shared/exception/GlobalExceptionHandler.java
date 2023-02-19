@@ -52,9 +52,12 @@ public class GlobalExceptionHandler {
     return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
   }
 
-  @ExceptionHandler(ResourceAlreadyExistsException.class)
+  @ExceptionHandler({
+      ResourceAlreadyExistsException.class,
+      ResourceLinkedToAnotherException.class
+  })
   @ResponseStatus(HttpStatus.CONFLICT)
-  public ErrorResponse handleException(ResourceAlreadyExistsException exception) {
+  public ErrorResponse handleException(RuntimeException exception) {
     return new ErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage());
   }
 }
