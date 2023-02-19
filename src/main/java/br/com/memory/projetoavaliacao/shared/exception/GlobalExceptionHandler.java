@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -25,9 +25,9 @@ public class GlobalExceptionHandler {
     return new ErrorResponse(statusCode, fieldError.getDefaultMessage());
   }
 
-  @ExceptionHandler(InvalidFormatException.class)
+  @ExceptionHandler(JsonMappingException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorResponse handleException(InvalidFormatException exception) {
+  public ErrorResponse handleException(JsonMappingException exception) {
     Reference pathReference = exception.getPath().get(0);
     int statusCode = HttpStatus.BAD_REQUEST.value();
 
