@@ -45,4 +45,10 @@ public class GlobalExceptionHandler {
   public ErrorResponse handleException(InvalidDateFormatException exception) {
     return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
   }
+
+  @ExceptionHandler(ResourceNotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ErrorResponse handleException(ResourceNotFoundException exception) {
+    return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
+  }
 }
