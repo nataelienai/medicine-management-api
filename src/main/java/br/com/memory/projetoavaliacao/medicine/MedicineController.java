@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,5 +46,11 @@ public class MedicineController {
       @PathVariable String registrationNumber,
       @Valid @RequestBody MedicineUpdateDto medicineUpdateDto) {
     return medicineService.update(registrationNumber, medicineUpdateDto);
+  }
+
+  @DeleteMapping("/{registrationNumber}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteByRegistrationNumber(@PathVariable String registrationNumber) {
+    medicineService.deleteByRegistrationNumber(registrationNumber);
   }
 }
