@@ -3,3 +3,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/medicine
     username: postgres
     password: postgres
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
