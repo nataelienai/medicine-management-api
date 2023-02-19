@@ -1,6 +1,7 @@
 package br.com.memory.projetoavaliacao.shared.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,21 @@ public class GlobalExceptionHandler {
     }
 
     return new ErrorResponse(statusCode, fieldError.getDefaultMessage());
+  }
+
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleException(HttpMessageNotReadableException exception) {
+    Throwable cause = exception.getCause();
+    int statusCode = HttpStatus.BAD_REQUEST.value();
+
+    if (cause instanceof JsonMappingException) {
+      return handleException((JsonMappingException) cause);
+    }
+
+    return new ErrorResponse(
+        statusCode,
+        "One of the provided fields has an invalid type or format");
   }
 
   @ExceptionHandler(JsonMappingException.class)
