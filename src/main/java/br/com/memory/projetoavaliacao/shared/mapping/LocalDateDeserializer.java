@@ -23,6 +23,7 @@ public class LocalDateDeserializer extends StdDeserializer<LocalDate> {
   @Override
   public LocalDate deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
     String value = p.readValueAs(String.class);
+    String fieldName = p.currentName();
 
     if (value == null) {
       return null;
@@ -31,7 +32,8 @@ public class LocalDateDeserializer extends StdDeserializer<LocalDate> {
     try {
       return LocalDate.from(dtf.parse(value));
     } catch (DateTimeParseException e) {
-      throw new InvalidDateFormatException(p.currentName() + " has an invalid date format");
+      throw new InvalidDateFormatException(
+          String.format("The %s field has an invalid date format", fieldName));
     }
   }
 }
