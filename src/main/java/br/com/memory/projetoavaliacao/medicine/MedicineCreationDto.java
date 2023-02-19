@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @GroupSequence({ MedicineCreationDto.class, Extended.class })
 public class MedicineCreationDto {
   @NotBlank(message = "The registrationNumber field must not be blank")
-  @AnvisaRegistrationNumber(message = "The field registrationNumber has an invalid ANVISA registration number", groups = Extended.class)
+  @AnvisaRegistrationNumber(message = "The registrationNumber field has an invalid ANVISA registration number", groups = Extended.class)
   private String registrationNumber;
 
   @NotBlank(message = "The name field must not be blank")
@@ -33,7 +33,7 @@ public class MedicineCreationDto {
   private LocalDate expirationDate;
 
   @NotBlank(message = "The customerServicePhone field must not be blank")
-  @PhoneNumber(message = "The field customerServicePhone has an invalid phone number format", groups = Extended.class)
+  @PhoneNumber(message = "The customerServicePhone field has an invalid phone number format", groups = Extended.class)
   private String customerServicePhone;
 
   @NotNull(message = "The price field must not be null")
