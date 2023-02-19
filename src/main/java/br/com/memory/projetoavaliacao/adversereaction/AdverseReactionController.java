@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.memory.projetoavaliacao.shared.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -46,6 +49,17 @@ public class AdverseReactionController {
     return adverseReactionService.findAllBy(description, pageable);
   }
 
+  @Operation(
+    summary = "Create adverse reaction",
+    description = "Create an adverse reaction and returns it.",
+    responses = {
+      @ApiResponse(responseCode = "201", description = "Operation succeeded"),
+      @ApiResponse(
+        responseCode = "400",
+        description = "Invalid request body",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    }
+  )
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public AdverseReaction create(@Valid @RequestBody AdverseReactionDto adverseReactionDto) {
