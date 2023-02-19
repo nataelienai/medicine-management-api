@@ -39,4 +39,10 @@ public class GlobalExceptionHandler {
     String message = String.format("The %s field has an invalid type or format", problematicField);
     return new ErrorResponse(statusCode, message);
   }
+
+  @ExceptionHandler(InvalidDateFormatException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleException(InvalidDateFormatException exception) {
+    return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+  }
 }
