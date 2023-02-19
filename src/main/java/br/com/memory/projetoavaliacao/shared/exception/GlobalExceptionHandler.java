@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+  @Hidden
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleException(MethodArgumentNotValidException exception) {
@@ -26,6 +29,7 @@ public class GlobalExceptionHandler {
     return new ErrorResponse(statusCode, fieldError.getDefaultMessage());
   }
 
+  @Hidden
   @ExceptionHandler(HttpMessageNotReadableException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleException(HttpMessageNotReadableException exception) {
@@ -41,6 +45,7 @@ public class GlobalExceptionHandler {
         "One of the provided fields has an invalid type or format");
   }
 
+  @Hidden
   @ExceptionHandler(JsonMappingException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleException(JsonMappingException exception) {
@@ -62,18 +67,21 @@ public class GlobalExceptionHandler {
     return new ErrorResponse(statusCode, message);
   }
 
+  @Hidden
   @ExceptionHandler(InvalidDateFormatException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleException(InvalidDateFormatException exception) {
     return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
   }
 
+  @Hidden
   @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public ErrorResponse handleException(ResourceNotFoundException exception) {
     return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
   }
 
+  @Hidden
   @ExceptionHandler({
       ResourceAlreadyExistsException.class,
       ResourceLinkedToAnotherException.class
@@ -83,6 +91,7 @@ public class GlobalExceptionHandler {
     return new ErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage());
   }
 
+  @Hidden
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ErrorResponse handleUncaughtException(Exception exception) {
