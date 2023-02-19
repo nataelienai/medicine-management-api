@@ -60,4 +60,12 @@ public class GlobalExceptionHandler {
   public ErrorResponse handleException(RuntimeException exception) {
     return new ErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage());
   }
+
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ErrorResponse handleUncaughtException(Exception exception) {
+    return new ErrorResponse(
+        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+        "Internal Server Error");
+  }
 }
