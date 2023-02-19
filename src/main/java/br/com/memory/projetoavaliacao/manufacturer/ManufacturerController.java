@@ -26,7 +26,7 @@ public class ManufacturerController {
 
   @Operation(
     summary = "Get all manufacturers",
-    description = "Get a paged list of manufacturers and filtered by name if provided.",
+    description = "Gets a paged list of manufacturers and filtered by name if provided.",
     responses = {
       @ApiResponse(responseCode = "200", description = "Operation succeeded")
     }

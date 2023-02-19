@@ -36,7 +36,7 @@ public class AdverseReactionController {
 
   @Operation(
     summary = "Get all adverse reactions",
-    description = "Get a paged list of adverse reactions and filtered by description if provided.",
+    description = "Gets a paged list of adverse reactions and filtered by description if provided.",
     responses = {
       @ApiResponse(responseCode = "200", description = "Operation succeeded")
     }
@@ -51,7 +51,7 @@ public class AdverseReactionController {
 
   @Operation(
     summary = "Create adverse reaction",
-    description = "Create an adverse reaction and returns it.",
+    description = "Creates an adverse reaction and returns it.",
     responses = {
       @ApiResponse(responseCode = "201", description = "Operation succeeded"),
       @ApiResponse(
@@ -68,7 +68,7 @@ public class AdverseReactionController {
 
   @Operation(
     summary = "Update adverse reaction",
-    description = "Update an adverse reaction by its id and returns it.",
+    description = "Updates an adverse reaction by its id and returns it.",
     responses = {
       @ApiResponse(responseCode = "200", description = "Operation succeeded"),
       @ApiResponse(
@@ -91,7 +91,7 @@ public class AdverseReactionController {
 
   @Operation(
     summary = "Delete adverse reaction by id",
-    description = "Delete an adverse reaction by its id.",
+    description = "Deletes an adverse reaction by its id.",
     responses = {
       @ApiResponse(responseCode = "204", description = "Operation succeeded"),
       @ApiResponse(
