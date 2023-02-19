@@ -7,7 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,5 +37,13 @@ public class MedicineController {
   @ResponseStatus(HttpStatus.CREATED)
   public Medicine create(@Valid @RequestBody MedicineCreationDto medicineCreationDto) {
     return medicineService.create(medicineCreationDto);
+  }
+
+  @PutMapping("/{registrationNumber}")
+  @ResponseStatus(HttpStatus.OK)
+  public Medicine update(
+      @PathVariable String registrationNumber,
+      @Valid @RequestBody MedicineUpdateDto medicineUpdateDto) {
+    return medicineService.update(registrationNumber, medicineUpdateDto);
   }
 }
