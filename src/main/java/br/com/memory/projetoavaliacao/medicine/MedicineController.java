@@ -2,6 +2,7 @@ package br.com.memory.projetoavaliacao.medicine;
 
 import javax.validation.Valid;
 
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -17,20 +18,32 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/medicines")
+@Tag(name = "Medicine", description = "The medicine resource API")
 public class MedicineController {
   private final MedicineService medicineService;
 
+  @Operation(
+    summary = "Get all medicines",
+    description = "Gets a paged list of medicines and filtered by registration number or name if provided.",
+    responses = {
+      @ApiResponse(responseCode = "200", description = "Operation succeeded")
+    }
+  )
   @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public Page<Medicine> findAllBy(
-      @RequestParam(required = false) String registrationNumber,
-      @RequestParam(required = false) String name,
-      @PageableDefault Pageable pageable) {
+      @Parameter(description = "The registration number to filter by") @RequestParam(required = false) String registrationNumber,
+      @Parameter(description = "The name to filter by") @RequestParam(required = false) String name,
+      @ParameterObject @PageableDefault Pageable pageable) {
     return medicineService.findAllBy(registrationNumber, name, pageable);
   }
 
