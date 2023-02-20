@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.memory.projetoavaliacao.shared.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -47,6 +50,25 @@ public class MedicineController {
     return medicineService.findAllBy(registrationNumber, name, pageable);
   }
 
+  @Operation(
+    summary = "Create medicine",
+    description = "Creates a medicine and returns it.",
+    responses = {
+      @ApiResponse(responseCode = "201", description = "Operation succeeded"),
+      @ApiResponse(
+        responseCode = "400",
+        description = "Invalid request body",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(
+        responseCode = "404",
+        description = "Manufacturer id or adverse reaction id not found",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(
+        responseCode = "409",
+        description = "Registration number already exists",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    }
+  )
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public Medicine create(@Valid @RequestBody MedicineCreationDto medicineCreationDto) {
