@@ -98,9 +98,21 @@ public class MedicineController {
     return medicineService.update(registrationNumber, medicineUpdateDto);
   }
 
+  @Operation(
+    summary = "Delete medicine by registration number",
+    description = "Deletes a medicine by its registration number.",
+    responses = {
+      @ApiResponse(responseCode = "204", description = "Operation succeeded"),
+      @ApiResponse(
+        responseCode = "404",
+        description = "Registration number not found",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    }
+  )
   @DeleteMapping("/{registrationNumber}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteByRegistrationNumber(@PathVariable String registrationNumber) {
+  public void deleteByRegistrationNumber(
+    @Parameter(description = "The registration number of the medicine to be deleted") @PathVariable String registrationNumber) {
     medicineService.deleteByRegistrationNumber(registrationNumber);
   }
 }
