@@ -75,10 +75,25 @@ public class MedicineController {
     return medicineService.create(medicineCreationDto);
   }
 
+  @Operation(
+    summary = "Update medicine",
+    description = "Updates a medicine by its registration number and returns it.",
+    responses = {
+      @ApiResponse(responseCode = "200", description = "Operation succeeded"),
+      @ApiResponse(
+        responseCode = "400",
+        description = "Invalid request body",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(
+        responseCode = "404",
+        description = "Registration number, manufacturer id or adverse reaction id not found",
+        content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    }
+  )
   @PutMapping("/{registrationNumber}")
   @ResponseStatus(HttpStatus.OK)
   public Medicine update(
-      @PathVariable String registrationNumber,
+      @Parameter(description = "The registration number of the medicine to be updated") @PathVariable String registrationNumber,
       @Valid @RequestBody MedicineUpdateDto medicineUpdateDto) {
     return medicineService.update(registrationNumber, medicineUpdateDto);
   }
