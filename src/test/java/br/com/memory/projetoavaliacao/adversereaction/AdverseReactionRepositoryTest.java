@@ -86,4 +86,39 @@ public class AdverseReactionRepositoryTest {
       assertThat(adverseReaction.getDescription()).isIn(expectedAdverseReactionDescriptions);
     });
   }
+
+  @Test
+  @DisplayName("findAllBy() should return a filtered and paged list of adverse reactions when given description and pagination")
+  void findAllByShouldReturnFilteredAndPagedListOfAdverseReactionsWhenGivenDescriptionAndPagination() {
+    // given
+    List<String> adverseReactionDescriptions = List.of(
+        "Bad reaction",
+        "Very bad reaction",
+        "Worst reaction",
+        "Really bad reaction");
+    Set<AdverseReaction> adverseReactions = adverseReactionDescriptions.stream()
+        .map(description -> new AdverseReaction(description))
+        .collect(Collectors.toSet());
+    adverseReactionRepository.saveAll(adverseReactions);
+
+    // when
+    String descriptionFilter = "bad";
+    Pageable firstPage = PageRequest.of(0, 2);
+    Page<AdverseReaction> retrievedAdverseReactions = adverseReactionRepository.findAllBy(
+        descriptionFilter,
+        firstPage);
+
+    // then
+    List<String> expectedAdverseReactionDescriptions = List.of(
+        "Bad reaction",
+        "Very bad reaction",
+        "Really bad reaction");
+    assertThat(retrievedAdverseReactions.getTotalElements()).isEqualTo(expectedAdverseReactionDescriptions.size());
+    assertThat(retrievedAdverseReactions.getNumberOfElements()).isEqualTo(firstPage.getPageSize());
+    assertThat(retrievedAdverseReactions.getSize()).isEqualTo(firstPage.getPageSize());
+    assertThat(retrievedAdverseReactions.getNumber()).isEqualTo(firstPage.getPageNumber());
+    retrievedAdverseReactions.getContent().forEach(description -> {
+      assertThat(description.getDescription()).isIn(expectedAdverseReactionDescriptions);
+    });
+  }
 }
