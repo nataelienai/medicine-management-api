@@ -2,7 +2,9 @@ package br.com.memory.projetoavaliacao.adversereaction;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,5 +62,28 @@ public class AdverseReactionRepositoryTest {
     assertThat(pagedAdverseReactions.getNumberOfElements()).isEqualTo(firstPage.getPageSize());
     assertThat(pagedAdverseReactions.getSize()).isEqualTo(firstPage.getPageSize());
     assertThat(pagedAdverseReactions.getNumber()).isEqualTo(firstPage.getPageNumber());
+  }
+
+  @Test
+  @DisplayName("findAllBy() should return a filtered list of adverse reactions when given only description")
+  void findAllByShouldReturnFilteredListOfAdverseReactionsWhenGivenOnlyDescription() {
+    // given
+    List<String> adverseReactionDescriptions = List.of("Bad reaction", "Very bad reaction", "Worst reaction");
+    Set<AdverseReaction> adverseReactions = adverseReactionDescriptions.stream()
+        .map(description -> new AdverseReaction(description))
+        .collect(Collectors.toSet());
+    adverseReactionRepository.saveAll(adverseReactions);
+
+    // when
+    String descriptionFilter = "bad";
+    Page<AdverseReaction> filteredAdverseReactions = adverseReactionRepository.findAllBy(descriptionFilter, null);
+
+    // then
+    List<String> expectedAdverseReactionDescriptions = List.of("Bad reaction", "Very bad reaction");
+    assertThat(filteredAdverseReactions.getTotalElements()).isEqualTo(expectedAdverseReactionDescriptions.size());
+    assertThat(filteredAdverseReactions.getNumberOfElements()).isEqualTo(expectedAdverseReactionDescriptions.size());
+    filteredAdverseReactions.getContent().forEach(adverseReaction -> {
+      assertThat(adverseReaction.getDescription()).isIn(expectedAdverseReactionDescriptions);
+    });
   }
 }
