@@ -233,4 +233,55 @@ public class MedicineRepositoryTest {
       assertThat(medicine.getName()).isIn(expectedNames);
     });
   }
+
+  @Test
+  @DisplayName("findAllBy() should return a filtered and paged list of medicines when given registration number, name and pagination")
+  void findAllByShouldReturnFilteredAndPagedListOfMedicinesWhenGivenRegistrationNumberAndNameAndPagination() {
+    // given
+    Manufacturer manufacturer = manufacturerRepository.save(
+        new Manufacturer("manufacturer"));
+    Set<Medicine> medicines = Set.of(
+        new Medicine(
+            "0.0000.0000.000-1",
+            "Weak medicine",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()),
+        new Medicine(
+            "0.0000.0000.100-0",
+            "Very weak medicine",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()),
+        new Medicine(
+            "0.0000.1000.000-0",
+            "Useless medicine",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()));
+    medicineRepository.saveAll(medicines);
+
+    // when
+    String nameFilter = "weak";
+    String registrationNumberFilter = "0.0000.0000";
+    Pageable firstPage = PageRequest.of(0, 1);
+    Page<Medicine> fetchedMedicines = medicineRepository.findAllBy(registrationNumberFilter, nameFilter, firstPage);
+
+    // then
+    List<String> expectedFilteredNames = List.of("Weak medicine", "Very weak medicine");
+    assertThat(fetchedMedicines.getTotalElements()).isEqualTo(expectedFilteredNames.size());
+    assertThat(fetchedMedicines.getNumberOfElements()).isEqualTo(firstPage.getPageSize());
+    fetchedMedicines.getContent().forEach(medicine -> {
+      assertThat(medicine.getName()).isIn(expectedFilteredNames);
+    });
+  }
 }
