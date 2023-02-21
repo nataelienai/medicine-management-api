@@ -105,4 +105,20 @@ public class AdverseReactionServiceTest {
     assertThat(updatedAdverseReaction.getId()).isEqualTo(id);
     assertThat(updatedAdverseReaction.getDescription()).isEqualTo(adverseReactionDto.getDescription());
   }
+
+  @Test
+  @DisplayName("deleteById() should throw when given a non-existent id")
+  void deleteByIdShouldThrowWhenGivenNonExistentId() {
+    // given
+    Long id = 1L;
+    when(adverseReactionRepository.existsById(id)).thenReturn(false);
+
+    // when
+    // then
+    assertThatThrownBy(() -> adverseReactionService.deleteById(id))
+        .isInstanceOf(ResourceNotFoundException.class);
+
+    verify(medicineRepository, never()).existsByAdverseReactionsId(any());
+    verify(adverseReactionRepository, never()).deleteById(any());
+  }
 }
