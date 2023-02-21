@@ -193,4 +193,44 @@ public class MedicineRepositoryTest {
       assertThat(medicine.getRegistrationNumber()).isIn(expectedRegistrationNumbers);
     });
   }
+
+  @Test
+  @DisplayName("findAllBy() should return a filtered list of medicines when given only name")
+  void findAllByShouldReturnFilteredListOfMedicinesWhenGivenOnlyName() {
+    // given
+    Manufacturer manufacturer = manufacturerRepository.save(
+        new Manufacturer("manufacturer"));
+    Set<Medicine> medicines = Set.of(
+        new Medicine(
+            "0.0000.0000.000-0",
+            "medicine 1",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()),
+        new Medicine(
+            "1.0000.0000.000-0",
+            "medicine 2",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()));
+    medicineRepository.saveAll(medicines);
+
+    // when
+    String nameFilter = "MEDICINE 1";
+    Page<Medicine> filteredMedicines = medicineRepository.findAllBy(null, nameFilter, null);
+
+    // then
+    List<String> expectedNames = List.of("medicine 1");
+    assertThat(filteredMedicines.getTotalElements()).isEqualTo(expectedNames.size());
+    assertThat(filteredMedicines.getNumberOfElements()).isEqualTo(expectedNames.size());
+    filteredMedicines.getContent().forEach(medicine -> {
+      assertThat(medicine.getName()).isIn(expectedNames);
+    });
+  }
 }
