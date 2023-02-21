@@ -147,12 +147,10 @@ public class MedicineServiceTest {
 
     // then
     assertThat(medicine).isNotNull();
-    assertThat(medicine.getRegistrationNumber()).isEqualTo(medicineCreationDto.getRegistrationNumber());
-    assertThat(medicine.getName()).isEqualTo(medicineCreationDto.getName());
-    assertThat(medicine.getExpirationDate()).isEqualTo(medicineCreationDto.getExpirationDate());
-    assertThat(medicine.getCustomerServicePhone()).isEqualTo(medicineCreationDto.getCustomerServicePhone());
-    assertThat(medicine.getPrice()).isEqualTo(medicineCreationDto.getPrice());
-    assertThat(medicine.getAmountOfPills()).isEqualTo(medicineCreationDto.getAmountOfPills());
+    assertThat(medicine)
+        .usingRecursiveComparison()
+        .ignoringFields("manufacturer", "adverseReactions")
+        .isEqualTo(medicineCreationDto);
     assertThat(medicine.getManufacturer()).isEqualTo(manufacturer);
     assertThat(medicine.getAdverseReactions().contains(adverseReaction)).isTrue();
   }
