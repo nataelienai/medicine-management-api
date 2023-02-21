@@ -138,4 +138,19 @@ public class AdverseReactionServiceTest {
 
     verify(adverseReactionRepository, never()).deleteById(any());
   }
+
+  @Test
+  @DisplayName("deleteById() should delete adverse reaction when the given id exists and is not linked to a medicine")
+  void deleteByIdShouldDeleteAdverseReactionWhenGivenIdExistsAndIsNotLinkedToMedicine() {
+    // given
+    Long id = 1L;
+    when(adverseReactionRepository.existsById(id)).thenReturn(true);
+    when(medicineRepository.existsByAdverseReactionsId(id)).thenReturn(false);
+
+    // when
+    adverseReactionService.deleteById(id);
+
+    // then
+    verify(adverseReactionRepository).deleteById(id);
+  }
 }
