@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReaction;
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReactionRepository;
@@ -113,4 +115,41 @@ public class MedicineRepositoryTest {
     assertThat(fetchedMedicines.getNumberOfElements()).isEqualTo(medicines.size());
   }
 
+  @Test
+  @DisplayName("findAllBy() should return a paged list of medicines when given only pagination")
+  void findAllByShouldReturnPagedListOfMedicinesWhenGivenOnlyPagination() {
+    // given
+    Manufacturer manufacturer = manufacturerRepository.save(
+        new Manufacturer("manufacturer"));
+    Set<Medicine> medicines = Set.of(
+        new Medicine(
+            "0.0000.0000.000-0",
+            "medicine 1",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()),
+        new Medicine(
+            "1.0000.0000.000-0",
+            "medicine 2",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()));
+    medicineRepository.saveAll(medicines);
+
+    // when
+    Pageable firstPage = PageRequest.of(0, 1);
+    Page<Medicine> pagedMedicines = medicineRepository.findAllBy(null, null, firstPage);
+
+    // then
+    assertThat(pagedMedicines.getTotalElements()).isEqualTo(medicines.size());
+    assertThat(pagedMedicines.getNumberOfElements()).isEqualTo(firstPage.getPageSize());
+    assertThat(pagedMedicines.getSize()).isEqualTo(firstPage.getPageSize());
+    assertThat(pagedMedicines.getNumber()).isEqualTo(firstPage.getPageNumber());
+  }
 }
