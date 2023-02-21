@@ -1,10 +1,14 @@
 package br.com.memory.projetoavaliacao.adversereaction;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import br.com.memory.projetoavaliacao.medicine.MedicineRepository;
+import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class AdverseReactionServiceTest {
@@ -60,5 +65,21 @@ public class AdverseReactionServiceTest {
     // then
     assertThat(adverseReaction).isNotNull();
     assertThat(adverseReaction.getDescription()).isEqualTo(adverseReactionDto.getDescription());
+  }
+
+  @Test
+  @DisplayName("update() should throw when given a non-existent id")
+  void updateShouldThrowWhenGivenNonExistentId() {
+    // given
+    Long id = 1L;
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto("description");
+    when(adverseReactionRepository.findById(id)).thenReturn(Optional.empty());
+
+    // when
+    // then
+    assertThatThrownBy(() -> adverseReactionService.update(id, adverseReactionDto))
+        .isInstanceOf(ResourceNotFoundException.class);
+
+    verify(adverseReactionRepository, never()).save(any());
   }
 }
