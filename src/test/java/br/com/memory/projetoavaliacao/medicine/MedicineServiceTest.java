@@ -155,6 +155,23 @@ public class MedicineServiceTest {
     assertThat(medicine.getAdverseReactions().contains(adverseReaction)).isTrue();
   }
 
+  @Test
+  @DisplayName("update() should throw when given a non-existent registration number")
+  void updateShouldThrowWhenGivenNonExistentRegistrationNumber() {
+    // given
+    String registrationNumber = "1.4444.4444.333-1";
+    MedicineUpdateDto medicineUpdateDto = makeMedicineUpdateDto(1L, Set.of(1L));
+    when(medicineRepository.findById(registrationNumber))
+        .thenReturn(Optional.empty());
+
+    // when
+    // then
+    assertThatThrownBy(() -> medicineService.update(registrationNumber, medicineUpdateDto))
+        .isInstanceOf(ResourceNotFoundException.class);
+
+    verify(medicineRepository, never()).save(any());
+  }
+
   private Manufacturer makeManufacturer() {
     return new Manufacturer(1L, "Manufacturer");
   }
@@ -166,6 +183,17 @@ public class MedicineServiceTest {
   private MedicineCreationDto makeMedicineCreationDto(Long manufacturerId, Set<Long> adverseReactionIds) {
     return new MedicineCreationDto(
         "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        manufacturerId,
+        adverseReactionIds);
+  }
+
+  private MedicineUpdateDto makeMedicineUpdateDto(Long manufacturerId, Set<Long> adverseReactionIds) {
+    return new MedicineUpdateDto(
         "medicine",
         LocalDate.now(),
         "(12)0000-0000",
