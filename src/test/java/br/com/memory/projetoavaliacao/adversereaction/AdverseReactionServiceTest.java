@@ -82,4 +82,27 @@ public class AdverseReactionServiceTest {
 
     verify(adverseReactionRepository, never()).save(any());
   }
+
+  @Test
+  @DisplayName("update() should update adverse reaction when given an existent id")
+  void updateShouldUpdateAdverseReactionWhenGivenExistentId() {
+    // given
+    Long id = 1L;
+    AdverseReaction adverseReaction = new AdverseReaction(id, "description");
+    when(adverseReactionRepository.findById(id))
+        .thenReturn(Optional.of(adverseReaction));
+
+    when(adverseReactionRepository.save(any(AdverseReaction.class)))
+        .then(returnsFirstArg());
+
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto("updated description");
+
+    // when
+    AdverseReaction updatedAdverseReaction = adverseReactionService.update(id, adverseReactionDto);
+
+    // then
+    assertThat(updatedAdverseReaction).isNotNull();
+    assertThat(updatedAdverseReaction.getId()).isEqualTo(id);
+    assertThat(updatedAdverseReaction.getDescription()).isEqualTo(adverseReactionDto.getDescription());
+  }
 }
