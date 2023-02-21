@@ -11,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
 
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReaction;
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReactionRepository;
@@ -76,4 +77,40 @@ public class MedicineRepositoryTest {
     // then
     assertThat(someMedicineHasAdverseReactionId).isFalse();
   }
+
+  @Test
+  @DisplayName("findAllBy() should return all medicines when not given registration number, name and pagination")
+  void findAllByShouldReturnAllMedicinesWhenNotGivenRegistrationNumberAndNameAndPagination() {
+    // given
+    Manufacturer manufacturer = manufacturerRepository.save(
+        new Manufacturer("manufacturer"));
+    Set<Medicine> medicines = Set.of(
+        new Medicine(
+            "0.0000.0000.000-0",
+            "medicine 1",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()),
+        new Medicine(
+            "1.0000.0000.000-0",
+            "medicine 2",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()));
+    medicineRepository.saveAll(medicines);
+
+    // when
+    Page<Medicine> fetchedMedicines = medicineRepository.findAllBy(null, null, null);
+
+    // then
+    assertThat(fetchedMedicines.getTotalElements()).isEqualTo(medicines.size());
+    assertThat(fetchedMedicines.getNumberOfElements()).isEqualTo(medicines.size());
+  }
+
 }
