@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @DataJpaTest
 public class ManufacturerRepositoryTest {
@@ -35,6 +37,27 @@ public class ManufacturerRepositoryTest {
     Page<Manufacturer> retrievedManufacturers = manufacturerRepository.findAllBy(null, null);
 
     // then
-    assertThat(retrievedManufacturers.getTotalElements()).isEqualTo(3);
+    assertThat(retrievedManufacturers.getTotalElements()).isEqualTo(manufacturers.size());
   }
+
+  @Test
+  @DisplayName("findAllBy() should return a paged list of manufacturers when given only pagination")
+  void findAllByShouldReturnPagedListOfManufacturersWhenGivenOnlyPagination() {
+    // given
+    Set<Manufacturer> manufacturers = Set.of(
+        new Manufacturer("Manufacturer 1"),
+        new Manufacturer("Manufacturer 2"),
+        new Manufacturer("Manufacturer 3"));
+    manufacturerRepository.saveAll(manufacturers);
+
+    // when
+    Pageable firstPage = PageRequest.of(0, 2);
+    Page<Manufacturer> pagedManufacturers = manufacturerRepository.findAllBy(null, firstPage);
+
+    // then
+    assertThat(pagedManufacturers.getTotalElements()).isEqualTo(manufacturers.size());
+    assertThat(pagedManufacturers.getSize()).isEqualTo(firstPage.getPageSize());
+    assertThat(pagedManufacturers.getNumber()).isEqualTo(firstPage.getPageNumber());
+  }
+
 }
