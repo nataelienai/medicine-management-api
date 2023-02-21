@@ -61,4 +61,19 @@ public class MedicineRepositoryTest {
     // then
     assertThat(someMedicineHasAdverseReactionId).isTrue();
   }
+
+  @Test
+  @DisplayName("existsByAdverseReactionsId() should return false when no medicine has adverse reaction id")
+  void existsByAdverseReactionsIdShouldReturnFalseWhenNoMedicineHasAdverseReactionId() {
+    // given
+    AdverseReaction adverseReaction = adverseReactionRepository.save(
+        new AdverseReaction("a common reaction"));
+
+    // when
+    boolean someMedicineHasAdverseReactionId = medicineRepository.existsByAdverseReactionsId(
+        adverseReaction.getId());
+
+    // then
+    assertThat(someMedicineHasAdverseReactionId).isFalse();
+  }
 }
