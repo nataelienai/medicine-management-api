@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import br.com.memory.projetoavaliacao.medicine.MedicineRepository;
+import br.com.memory.projetoavaliacao.shared.exception.ResourceLinkedToAnotherException;
 import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
@@ -119,6 +120,22 @@ public class AdverseReactionServiceTest {
         .isInstanceOf(ResourceNotFoundException.class);
 
     verify(medicineRepository, never()).existsByAdverseReactionsId(any());
+    verify(adverseReactionRepository, never()).deleteById(any());
+  }
+
+  @Test
+  @DisplayName("deleteById() should throw when the given id is linked to a medicine")
+  void deleteByIdShouldThrowWhenGivenIdIsLinkedToMedicine() {
+    // given
+    Long id = 1L;
+    when(adverseReactionRepository.existsById(id)).thenReturn(true);
+    when(medicineRepository.existsByAdverseReactionsId(id)).thenReturn(true);
+
+    // when
+    // then
+    assertThatThrownBy(() -> adverseReactionService.deleteById(id))
+        .isInstanceOf(ResourceLinkedToAnotherException.class);
+
     verify(adverseReactionRepository, never()).deleteById(any());
   }
 }
