@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -151,5 +152,45 @@ public class MedicineRepositoryTest {
     assertThat(pagedMedicines.getNumberOfElements()).isEqualTo(firstPage.getPageSize());
     assertThat(pagedMedicines.getSize()).isEqualTo(firstPage.getPageSize());
     assertThat(pagedMedicines.getNumber()).isEqualTo(firstPage.getPageNumber());
+  }
+
+  @Test
+  @DisplayName("findAllBy() should return a filtered list of medicines when given only registration number")
+  void findAllByShouldReturnFilteredListOfMedicinesWhenGivenOnlyRegistrationNumber() {
+    // given
+    Manufacturer manufacturer = manufacturerRepository.save(
+        new Manufacturer("manufacturer"));
+    Set<Medicine> medicines = Set.of(
+        new Medicine(
+            "0.0000.0000.000-0",
+            "medicine 1",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()),
+        new Medicine(
+            "1.0000.0000.000-0",
+            "medicine 2",
+            LocalDate.now(),
+            "(00)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            manufacturer,
+            Set.of()));
+    medicineRepository.saveAll(medicines);
+
+    // when
+    String registrationNumberFilter = "0.0000.0000.000-0";
+    Page<Medicine> filteredMedicines = medicineRepository.findAllBy(registrationNumberFilter, null, null);
+
+    // then
+    List<String> expectedRegistrationNumbers = List.of(registrationNumberFilter);
+    assertThat(filteredMedicines.getTotalElements()).isEqualTo(expectedRegistrationNumbers.size());
+    assertThat(filteredMedicines.getNumberOfElements()).isEqualTo(expectedRegistrationNumbers.size());
+    filteredMedicines.getContent().forEach(medicine -> {
+      assertThat(medicine.getRegistrationNumber()).isIn(expectedRegistrationNumbers);
+    });
   }
 }
