@@ -70,15 +70,7 @@ public class MedicineServiceTest {
   @DisplayName("create() should throw when the given registration number already exists")
   void createShouldThrowWhenGivenRegistrationNumberAlreadyExists() {
     // given
-    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
-        "1.4444.4444.333-1",
-        "medicine",
-        LocalDate.now(),
-        "(12)0000-0000",
-        BigDecimal.valueOf(1),
-        1,
-        1L,
-        Set.of(1L));
+    MedicineCreationDto medicineCreationDto = makeMedicineCreationDto(1L, Set.of(1L));
     when(medicineRepository.existsById(medicineCreationDto.getRegistrationNumber()))
         .thenReturn(true);
 
@@ -94,15 +86,7 @@ public class MedicineServiceTest {
   @DisplayName("create() should throw when given a non-existent manufacturer id")
   void createShouldThrowWhenGivenNonExistentManufacturerId() {
     // given
-    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
-        "1.4444.4444.333-1",
-        "medicine",
-        LocalDate.now(),
-        "(12)0000-0000",
-        BigDecimal.valueOf(1),
-        1,
-        1L,
-        Set.of(1L));
+    MedicineCreationDto medicineCreationDto = makeMedicineCreationDto(1L, Set.of(1L));
     when(medicineRepository.existsById(medicineCreationDto.getRegistrationNumber()))
         .thenReturn(false);
     when(manufacturerRepository.findById(medicineCreationDto.getManufacturerId()))
@@ -120,16 +104,11 @@ public class MedicineServiceTest {
   @DisplayName("create() should throw when given a non-existent adverse reaction id")
   void createShouldThrowWhenGivenNonExistentAdverseReactionId() {
     // given
-    Manufacturer manufacturer = new Manufacturer(1L, "manufacturer");
-    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
-        "1.4444.4444.333-1",
-        "medicine",
-        LocalDate.now(),
-        "(12)0000-0000",
-        BigDecimal.valueOf(1),
-        1,
+    Manufacturer manufacturer = makeManufacturer();
+    MedicineCreationDto medicineCreationDto = makeMedicineCreationDto(
         manufacturer.getId(),
         Set.of(1L));
+
     when(medicineRepository.existsById(medicineCreationDto.getRegistrationNumber()))
         .thenReturn(false);
     when(manufacturerRepository.findById(medicineCreationDto.getManufacturerId()))
@@ -149,17 +128,12 @@ public class MedicineServiceTest {
   @DisplayName("create() should create a medicine when given an entirely valid input")
   void createShouldCreateMedicineWhenGivenEntirelyValidInput() {
     // given
-    Manufacturer manufacturer = new Manufacturer(1L, "manufacturer");
-    AdverseReaction adverseReaction = new AdverseReaction(1L, "description");
-    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
-        "1.4444.4444.333-1",
-        "medicine",
-        LocalDate.now(),
-        "(12)0000-0000",
-        BigDecimal.valueOf(1),
-        1,
+    Manufacturer manufacturer = makeManufacturer();
+    AdverseReaction adverseReaction = makeAdverseReaction();
+    MedicineCreationDto medicineCreationDto = makeMedicineCreationDto(
         manufacturer.getId(),
         Set.of(adverseReaction.getId()));
+
     when(medicineRepository.existsById(medicineCreationDto.getRegistrationNumber()))
         .thenReturn(false);
     when(manufacturerRepository.findById(medicineCreationDto.getManufacturerId()))
@@ -181,5 +155,25 @@ public class MedicineServiceTest {
     assertThat(medicine.getAmountOfPills()).isEqualTo(medicineCreationDto.getAmountOfPills());
     assertThat(medicine.getManufacturer()).isEqualTo(manufacturer);
     assertThat(medicine.getAdverseReactions().contains(adverseReaction)).isTrue();
+  }
+
+  private Manufacturer makeManufacturer() {
+    return new Manufacturer(1L, "Manufacturer");
+  }
+
+  private AdverseReaction makeAdverseReaction() {
+    return new AdverseReaction(1L, "Description");
+  }
+
+  private MedicineCreationDto makeMedicineCreationDto(Long manufacturerId, Set<Long> adverseReactionIds) {
+    return new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        manufacturerId,
+        adverseReactionIds);
   }
 }
