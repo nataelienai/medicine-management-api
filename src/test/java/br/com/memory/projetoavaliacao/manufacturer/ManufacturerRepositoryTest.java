@@ -40,6 +40,7 @@ public class ManufacturerRepositoryTest {
 
     // then
     assertThat(retrievedManufacturers.getTotalElements()).isEqualTo(manufacturers.size());
+    assertThat(retrievedManufacturers.getNumberOfElements()).isEqualTo(manufacturers.size());
   }
 
   @Test
@@ -58,6 +59,7 @@ public class ManufacturerRepositoryTest {
 
     // then
     assertThat(pagedManufacturers.getTotalElements()).isEqualTo(manufacturers.size());
+    assertThat(pagedManufacturers.getNumberOfElements()).isEqualTo(firstPage.getPageSize());
     assertThat(pagedManufacturers.getSize()).isEqualTo(firstPage.getPageSize());
     assertThat(pagedManufacturers.getNumber()).isEqualTo(firstPage.getPageNumber());
   }
