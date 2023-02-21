@@ -86,4 +86,30 @@ public class ManufacturerRepositoryTest {
       assertThat(manufacturer.getName()).isIn(expectedManufacturerNames);
     });
   }
+
+  @Test
+  @DisplayName("findAllBy() should return a filtered and paged list of manufacturers when given name and pagination")
+  void findAllByShouldReturnFilteredAndPagedListOfManufacturersWhenGivenNameAndPagination() {
+    // given
+    List<String> manufacturerNames = List.of("The Manu", "The Facturer", "The Manufacturer", "A Manufacturer");
+    Set<Manufacturer> manufacturers = manufacturerNames.stream()
+        .map(name -> new Manufacturer(name))
+        .collect(Collectors.toSet());
+    manufacturerRepository.saveAll(manufacturers);
+
+    // when
+    String nameFilter = "facturer";
+    Pageable firstPage = PageRequest.of(0, 2);
+    Page<Manufacturer> filteredAndPagedManufacturers = manufacturerRepository.findAllBy(nameFilter, firstPage);
+
+    // then
+    List<String> expectedManufacturerNames = List.of("The Facturer", "The Manufacturer", "A Manufacturer");
+    assertThat(filteredAndPagedManufacturers.getTotalElements()).isEqualTo(expectedManufacturerNames.size());
+    assertThat(filteredAndPagedManufacturers.getNumberOfElements()).isEqualTo(firstPage.getPageSize());
+    assertThat(filteredAndPagedManufacturers.getSize()).isEqualTo(firstPage.getPageSize());
+    assertThat(filteredAndPagedManufacturers.getNumber()).isEqualTo(firstPage.getPageNumber());
+    filteredAndPagedManufacturers.getContent().forEach(manufacturer -> {
+      assertThat(manufacturer.getName()).isIn(expectedManufacturerNames);
+    });
+  }
 }
