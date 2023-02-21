@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReactionRepository;
+import br.com.memory.projetoavaliacao.manufacturer.Manufacturer;
 import br.com.memory.projetoavaliacao.manufacturer.ManufacturerRepository;
 import br.com.memory.projetoavaliacao.shared.exception.ResourceAlreadyExistsException;
 import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
@@ -102,6 +104,35 @@ public class MedicineServiceTest {
         .thenReturn(false);
     when(manufacturerRepository.findById(medicineCreationDto.getManufacturerId()))
         .thenReturn(Optional.empty());
+
+    // when
+    // then
+    assertThatThrownBy(() -> medicineService.create(medicineCreationDto))
+        .isInstanceOf(ResourceNotFoundException.class);
+
+    verify(medicineRepository, never()).save(any());
+  }
+
+  @Test
+  @DisplayName("create() should throw when given a non-existent adverse reaction id")
+  void createShouldThrowWhenGivenNonExistentAdverseReactionId() {
+    // given
+    Manufacturer manufacturer = new Manufacturer(1L, "manufacturer");
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        manufacturer.getId(),
+        Set.of(1L));
+    when(medicineRepository.existsById(medicineCreationDto.getRegistrationNumber()))
+        .thenReturn(false);
+    when(manufacturerRepository.findById(medicineCreationDto.getManufacturerId()))
+        .thenReturn(Optional.of(manufacturer));
+    when(adverseReactionRepository.findAllById(medicineCreationDto.getAdverseReactionIds()))
+        .thenReturn(List.of());
 
     // when
     // then
