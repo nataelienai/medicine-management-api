@@ -1,6 +1,10 @@
 package br.com.memory.projetoavaliacao.adversereaction;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,5 +44,21 @@ public class AdverseReactionServiceTest {
 
     // then
     verify(adverseReactionRepository).findAllBy(description, page);
+  }
+
+  @Test
+  @DisplayName("create() should create a new adverse reaction and return it")
+  void createShouldCreateNewAdverseReactionAndReturnIt() {
+    // given
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto("description");
+    when(adverseReactionRepository.save(any(AdverseReaction.class)))
+        .then(returnsFirstArg());
+
+    // when
+    AdverseReaction adverseReaction = adverseReactionService.create(adverseReactionDto);
+
+    // then
+    assertThat(adverseReaction).isNotNull();
+    assertThat(adverseReaction.getDescription()).isEqualTo(adverseReactionDto.getDescription());
   }
 }
