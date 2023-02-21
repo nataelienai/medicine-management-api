@@ -2,7 +2,9 @@ package br.com.memory.projetoavaliacao.manufacturer;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,4 +62,26 @@ public class ManufacturerRepositoryTest {
     assertThat(pagedManufacturers.getNumber()).isEqualTo(firstPage.getPageNumber());
   }
 
+  @Test
+  @DisplayName("findAllBy() should return a filtered list of manufacturers when given only name")
+  void findAllByShouldReturnFilteredListOfManufacturersWhenGivenOnlyName() {
+    // given
+    List<String> manufacturerNames = List.of("The Manu", "The Facturer", "The Manufacturer");
+    Set<Manufacturer> manufacturers = manufacturerNames.stream()
+        .map(name -> new Manufacturer(name))
+        .collect(Collectors.toSet());
+    manufacturerRepository.saveAll(manufacturers);
+
+    // when
+    String nameFilter = "manu";
+    Page<Manufacturer> filteredManufacturers = manufacturerRepository.findAllBy(nameFilter, null);
+
+    // then
+    List<String> expectedManufacturerNames = List.of("The Manu", "The Manufacturer");
+    assertThat(filteredManufacturers.getTotalElements()).isEqualTo(expectedManufacturerNames.size());
+    assertThat(filteredManufacturers.getNumberOfElements()).isEqualTo(expectedManufacturerNames.size());
+    filteredManufacturers.getContent().forEach(manufacturer -> {
+      assertThat(manufacturer.getName()).isIn(expectedManufacturerNames);
+    });
+  }
 }
