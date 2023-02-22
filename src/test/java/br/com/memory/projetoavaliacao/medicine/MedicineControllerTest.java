@@ -138,18 +138,9 @@ public class MedicineControllerTest {
         1,
         1L,
         Set.of(1L));
-    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
-
     // when
     // then
-    ErrorResponse errorResponse = new ErrorResponse(400, "The registrationNumber field must not be blank");
-    String expected = objectMapper.writeValueAsString(errorResponse);
-
-    mockMvc.perform(post("/medicines")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(serializedMedicineDto))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string(expected));
+    assertThatPostMethodReturns400(medicineCreationDto, "The registrationNumber field must not be blank");
   }
 
   @Test
@@ -165,18 +156,9 @@ public class MedicineControllerTest {
         1,
         1L,
         Set.of(1L));
-    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
-
     // when
     // then
-    ErrorResponse errorResponse = new ErrorResponse(400, "The registrationNumber field must not be blank");
-    String expected = objectMapper.writeValueAsString(errorResponse);
-
-    mockMvc.perform(post("/medicines")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(serializedMedicineDto))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string(expected));
+    assertThatPostMethodReturns400(medicineCreationDto, "The registrationNumber field must not be blank");
   }
 
   @Test
@@ -192,19 +174,11 @@ public class MedicineControllerTest {
         1,
         1L,
         Set.of(1L));
-    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
-
     // when
     // then
-    ErrorResponse errorResponse = new ErrorResponse(400,
+    assertThatPostMethodReturns400(
+        medicineCreationDto,
         "The registrationNumber field has an invalid ANVISA registration number");
-    String expected = objectMapper.writeValueAsString(errorResponse);
-
-    mockMvc.perform(post("/medicines")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(serializedMedicineDto))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string(expected));
   }
 
   @Test
@@ -220,18 +194,9 @@ public class MedicineControllerTest {
         1,
         1L,
         Set.of(1L));
-    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
-
     // when
     // then
-    ErrorResponse errorResponse = new ErrorResponse(400, "The name field must not be blank");
-    String expected = objectMapper.writeValueAsString(errorResponse);
-
-    mockMvc.perform(post("/medicines")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(serializedMedicineDto))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string(expected));
+    assertThatPostMethodReturns400(medicineCreationDto, "The name field must not be blank");
   }
 
   @Test
