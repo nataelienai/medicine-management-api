@@ -730,6 +730,27 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("PUT /medicines/{registrationNumber} should return 400 when given a null manufacturer id")
+  void putMedicinesShouldReturn400WhenGivenNullManufacturerId() throws Exception {
+    // given
+    MedicineUpdateDto medicineUpdateDto = new MedicineUpdateDto(
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        null,
+        Set.of(1L));
+
+    // when
+    // then
+    assertThatPutMethodReturns400(
+        "1.4444.4444.333-1",
+        medicineUpdateDto,
+        "The manufacturerId field must not be null");
+  }
+
+  @Test
   @DisplayName("PUT /medicines/{registrationNumber} should return 404 when registration number is not found")
   void putMedicinesShouldReturn404WhenRegistrationNumberIsNotFound() throws Exception {
     // given
