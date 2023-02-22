@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(controllers = ManufacturerController.class)
+@WebMvcTest(ManufacturerController.class)
 public class ManufacturerControllerTest {
   @Autowired
   private MockMvc mockMvc;
