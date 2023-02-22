@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.memory.projetoavaliacao.shared.exception.ErrorResponse;
+import br.com.memory.projetoavaliacao.shared.exception.ResourceLinkedToAnotherException;
 import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
 
 @WebMvcTest(AdverseReactionController.class)
@@ -254,5 +255,20 @@ public class AdverseReactionControllerTest {
     // then
     mockMvc.perform(delete("/adverse-reactions/{id}", id))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("DELETE /adverse-reactions/{id} should return 409 when given id is linked to a medicine")
+  void deleteAdverseReactionShouldReturn409WhenGivenIdIsLinkedToMedicine() throws Exception {
+    // given
+    Long id = 1L;
+    doThrow(ResourceLinkedToAnotherException.class)
+        .when(adverseReactionService)
+        .deleteById(id);
+
+    // when
+    // then
+    mockMvc.perform(delete("/adverse-reactions/{id}", id))
+        .andExpect(status().isConflict());
   }
 }
