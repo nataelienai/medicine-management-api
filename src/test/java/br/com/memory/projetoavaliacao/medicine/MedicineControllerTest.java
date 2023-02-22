@@ -432,6 +432,33 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("POST /medicines should return 404 when manufacturer or adverse reaction id was not found")
+  void postMedicinesShouldReturn400WhenGivenManufacturerOrAdverseReactionIdNotFound() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+
+    when(medicineService.create(medicineCreationDto))
+      .thenThrow(ResourceNotFoundException.class);
+
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
+
+    // when
+    // then
+    mockMvc.perform(post("/medicines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
   @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
   void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
     // given
