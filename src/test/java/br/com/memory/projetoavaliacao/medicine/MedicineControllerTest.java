@@ -520,6 +520,27 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("PUT /medicines/{registrationNumber} should return 400 when given null name")
+  void putMedicinesShouldReturn400WhenGivenNullName() throws Exception {
+    // given
+    MedicineUpdateDto medicineUpdateDto = new MedicineUpdateDto(
+        null,
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+
+    // when
+    // then
+    assertThatPutMethodReturns400(
+        "1.4444.4444.333-1",
+        medicineUpdateDto,
+        "The name field must not be blank");
+  }
+
+  @Test
   @DisplayName("PUT /medicines/{registrationNumber} should return 404 when registration number is not found")
   void putMedicinesShouldReturn404WhenRegistrationNumberIsNotFound() throws Exception {
     // given
@@ -599,6 +620,22 @@ public class MedicineControllerTest {
     String expected = objectMapper.writeValueAsString(errorResponse);
 
     mockMvc.perform(post("/medicines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(expected));
+  }
+
+  private void assertThatPutMethodReturns400(
+      String registrationNumber,
+      MedicineUpdateDto medicineDto,
+      String expectedMessage) throws Exception {
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineDto);
+
+    ErrorResponse errorResponse = new ErrorResponse(400, expectedMessage);
+    String expected = objectMapper.writeValueAsString(errorResponse);
+
+    mockMvc.perform(put("/medicines/{registrationNumber}", registrationNumber)
         .contentType(MediaType.APPLICATION_JSON)
         .content(serializedMedicineDto))
         .andExpect(status().isBadRequest())
