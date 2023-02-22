@@ -149,7 +149,7 @@ public class MedicineServiceTest {
     assertThat(medicine).isNotNull();
     assertThat(medicine)
         .usingRecursiveComparison()
-        .ignoringFields("manufacturer", "adverseReactions")
+        .ignoringExpectedNullFields()
         .isEqualTo(medicineCreationDto);
     assertThat(medicine.getManufacturer()).isEqualTo(manufacturer);
     assertThat(medicine.getAdverseReactions().contains(adverseReaction)).isTrue();
