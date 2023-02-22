@@ -2,7 +2,10 @@ package br.com.memory.projetoavaliacao.medicine;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -27,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReaction;
 import br.com.memory.projetoavaliacao.manufacturer.Manufacturer;
+import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
 
 @WebMvcTest(MedicineController.class)
 public class MedicineControllerTest {
@@ -87,6 +91,24 @@ public class MedicineControllerTest {
     mockMvc.perform(get("/medicines"))
         .andExpect(status().isOk())
         .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
+  void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
+    // given
+    String registrationNumber = "1.4444.4444.333-1";
+    doThrow(ResourceNotFoundException.class)
+        .when(medicineService)
+        .deleteByRegistrationNumber(any());
+    doNothing()
+        .when(medicineService)
+        .deleteByRegistrationNumber(registrationNumber);
+
+    // when
+    // then
+    mockMvc.perform(delete("/medicines/{registrationNumber}", registrationNumber))
+        .andExpect(status().isNoContent());
   }
 
   private Medicine makeMedicine() {
