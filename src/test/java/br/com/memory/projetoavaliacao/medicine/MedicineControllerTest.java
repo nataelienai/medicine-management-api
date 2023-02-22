@@ -272,6 +272,26 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("POST /medicines should return 400 when given an invalid customer service phone")
+  void postMedicinesShouldReturn400WhenGivenInvalidCustomerServicePhone() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "121234",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+    // when
+    // then
+    assertThatPostMethodReturns400(
+        medicineCreationDto,
+        "The customerServicePhone field has an invalid phone number format");
+  }
+
+  @Test
   @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
   void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
     // given
