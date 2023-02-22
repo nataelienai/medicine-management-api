@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -484,6 +485,38 @@ public class MedicineControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(serializedMedicineDto))
         .andExpect(status().isConflict());
+  }
+
+  @Test
+  @DisplayName("PUT /medicines/{registrationNumber} should return 200 and updated medicine when given valid input")
+  void putMedicinesShouldReturn200AndUpdatedMedicineWhenGivenValidInput() throws Exception {
+    // given
+    Long manufacturerId = 1L;
+    Long adverseReactionId = 1L;
+    Medicine medicine = makeMedicine(manufacturerId, adverseReactionId);
+    String registrationNumber = medicine.getRegistrationNumber();
+    MedicineUpdateDto medicineUpdateDto = new MedicineUpdateDto(
+        medicine.getName(),
+        medicine.getExpirationDate(),
+        medicine.getCustomerServicePhone(),
+        medicine.getPrice(),
+        medicine.getAmountOfPills(),
+        manufacturerId,
+        Set.of(adverseReactionId));
+
+    when(medicineService.update(registrationNumber, medicineUpdateDto))
+        .thenReturn(medicine);
+
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineUpdateDto);
+
+    // when
+    // then
+    String expected = objectMapper.writeValueAsString(medicine);
+    mockMvc.perform(put("/medicines/{registrationNumber}", registrationNumber)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isOk())
+        .andExpect(content().string(expected));
   }
 
   @Test
