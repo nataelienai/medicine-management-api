@@ -520,6 +520,33 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("PUT /medicines/{registrationNumber} should return 404 when registration number is not found")
+  void putMedicinesShouldReturn404WhenRegistrationNumberIsNotFound() throws Exception {
+    // given
+    String registrationNumber = "1.4444.4444.333-1";
+    MedicineUpdateDto medicineUpdateDto = new MedicineUpdateDto(
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+
+    when(medicineService.update(registrationNumber, medicineUpdateDto))
+        .thenThrow(ResourceNotFoundException.class);
+
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineUpdateDto);
+
+    // when
+    // then
+    mockMvc.perform(put("/medicines/{registrationNumber}", registrationNumber)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
   @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
   void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
     // given
