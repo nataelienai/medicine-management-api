@@ -172,6 +172,27 @@ public class MedicineServiceTest {
     verify(medicineRepository, never()).save(any());
   }
 
+  @Test
+  @DisplayName("update() should throw when given a non-existent manufacturer id")
+  void updateShouldThrowWhenGivenNonExistentManufacturerId() {
+    // given
+    Medicine medicine = makeMedicine(makeManufacturer(), Set.of(makeAdverseReaction()));
+    String registrationNumber = medicine.getRegistrationNumber();
+    MedicineUpdateDto medicineUpdateDto = makeMedicineUpdateDto(0L, Set.of(0L));
+
+    when(medicineRepository.findById(registrationNumber))
+        .thenReturn(Optional.of(medicine));
+    when(manufacturerRepository.findById(medicineUpdateDto.getManufacturerId()))
+        .thenReturn(Optional.empty());
+
+    // when
+    // then
+    assertThatThrownBy(() -> medicineService.update(registrationNumber, medicineUpdateDto))
+        .isInstanceOf(ResourceNotFoundException.class);
+
+    verify(medicineRepository, never()).save(any());
+  }
+
   private Manufacturer makeManufacturer() {
     return new Manufacturer(1L, "Manufacturer");
   }
@@ -201,5 +222,17 @@ public class MedicineServiceTest {
         1,
         manufacturerId,
         adverseReactionIds);
+  }
+
+  private Medicine makeMedicine(Manufacturer manufacturer, Set<AdverseReaction> adverseReaction) {
+    return new Medicine(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        manufacturer,
+        adverseReaction);
   }
 }
