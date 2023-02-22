@@ -235,6 +235,24 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("POST /medicines should return 400 when given an empty name")
+  void postMedicinesShouldReturn400WhenGivenEmptyName() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+    // when
+    // then
+    assertThatPostMethodReturns400(medicineCreationDto, "The name field must not be blank");
+  }
+
+  @Test
   @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
   void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
     // given
@@ -277,5 +295,19 @@ public class MedicineControllerTest {
         1,
         new Manufacturer(manufacturerId, "Manufacturer"),
         Set.of(new AdverseReaction(adverseReactionId, "Strong reaction")));
+  }
+
+  private void assertThatPostMethodReturns400(MedicineCreationDto medicineDto, String expectedMessage)
+      throws Exception {
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineDto);
+
+    ErrorResponse errorResponse = new ErrorResponse(400, expectedMessage);
+    String expected = objectMapper.writeValueAsString(errorResponse);
+
+    mockMvc.perform(post("/medicines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(expected));
   }
 }
