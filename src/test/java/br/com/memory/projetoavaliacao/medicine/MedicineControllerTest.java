@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReaction;
 import br.com.memory.projetoavaliacao.manufacturer.Manufacturer;
+import br.com.memory.projetoavaliacao.shared.exception.ErrorResponse;
 import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
 
 @WebMvcTest(MedicineController.class)
@@ -121,6 +122,33 @@ public class MedicineControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(serializedMedicineDto))
         .andExpect(status().isCreated())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("POST /medicines should return 400 when given null registration number")
+  void postMedicinesShouldReturn400WhenGivenNullRegistrationNumber() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        null,
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
+
+    // when
+    // then
+    ErrorResponse errorResponse = new ErrorResponse(400, "The registrationNumber field must not be blank");
+    String expected = objectMapper.writeValueAsString(errorResponse);
+
+    mockMvc.perform(post("/medicines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isBadRequest())
         .andExpect(content().string(expected));
   }
 
