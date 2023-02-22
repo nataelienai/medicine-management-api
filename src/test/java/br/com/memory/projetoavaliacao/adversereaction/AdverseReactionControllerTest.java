@@ -242,4 +242,17 @@ public class AdverseReactionControllerTest {
     mockMvc.perform(delete("/adverse-reactions/{id}", id))
         .andExpect(status().isNoContent());
   }
+
+  @Test
+  @DisplayName("DELETE /adverse-reactions/{id} should return 404 when given non-existent id")
+  void deleteAdverseReactionShouldReturn404WhenGivenNonExistentId() throws Exception {
+    // given
+    Long id = 1L;
+    doThrow(ResourceNotFoundException.class).when(adverseReactionService).deleteById(id);
+
+    // when
+    // then
+    mockMvc.perform(delete("/adverse-reactions/{id}", id))
+        .andExpect(status().isNotFound());
+  }
 }
