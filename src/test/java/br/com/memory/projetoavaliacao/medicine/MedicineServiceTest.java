@@ -267,6 +267,24 @@ public class MedicineServiceTest {
     verify(medicineRepository, never()).delete(any());
   }
 
+  @Test
+  @DisplayName("deleteByRegistrationNumber() should delete medicine when given an existent registration number")
+  void deleteByRegistrationNumberShouldDeleteMedicineWhenGivenExistentRegistrationNumber() {
+    // given
+    Manufacturer manufacturer = makeManufacturer();
+    AdverseReaction adverseReaction = makeAdverseReaction();
+    Medicine medicine = makeMedicine(manufacturer, Set.of(adverseReaction));
+
+    when(medicineRepository.findById(medicine.getRegistrationNumber()))
+        .thenReturn(Optional.of(medicine));
+
+    // when
+    medicineService.deleteByRegistrationNumber(medicine.getRegistrationNumber());
+
+    // then
+    verify(medicineRepository).delete(medicine);
+  }
+
   private Manufacturer makeManufacturer() {
     return new Manufacturer(1L, "Manufacturer");
   }
