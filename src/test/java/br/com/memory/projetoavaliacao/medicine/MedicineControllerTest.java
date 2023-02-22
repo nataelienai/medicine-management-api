@@ -392,6 +392,26 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("POST /medicines should return 400 when given a null adverse reaction ids")
+  void postMedicinesShouldReturn400WhenGivenNullAdverseReactionIds() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        null);
+    // when
+    // then
+    assertThatPostMethodReturns400(
+        medicineCreationDto,
+        "The adverseReactionIds field must not be null nor empty");
+  }
+
+  @Test
   @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
   void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
     // given
