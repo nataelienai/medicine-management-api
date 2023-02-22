@@ -12,10 +12,12 @@ import javax.validation.constraints.PositiveOrZero;
 import br.com.memory.projetoavaliacao.shared.validation.Extended;
 import br.com.memory.projetoavaliacao.shared.validation.PhoneNumber;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class MedicineUpdateDto {
