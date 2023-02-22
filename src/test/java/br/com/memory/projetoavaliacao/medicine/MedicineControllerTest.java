@@ -1,5 +1,7 @@
 package br.com.memory.projetoavaliacao.medicine;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -70,6 +72,37 @@ public class MedicineControllerTest {
         .param("name", nameFilter)
         .param("page", "0")
         .param("size", "10"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("GET /medicines should return 200 and paged list of medicines when not given filter and pagination")
+  void getMedicinesShouldReturn200AndPagedListOfMedicinesWhenNotGivenFilterAndPagination() throws Exception {
+    // given
+    Pageable pageable = PageRequest.of(0, 10);
+    List<Medicine> medicines = List.of(
+        new Medicine(
+            "1.4444.4444.333-1",
+            "medicine",
+            LocalDate.now(),
+            "(12)0000-0000",
+            BigDecimal.valueOf(1),
+            1,
+            new Manufacturer(1L, "Manufacturer"),
+            Set.of(new AdverseReaction(1L, "Strong reaction"))));
+    Page<Medicine> pagedMedicines = new PageImpl<>(
+        medicines,
+        pageable,
+        medicines.size());
+
+    when(medicineService.findAllBy(eq(null), eq(null), any(Pageable.class)))
+        .thenReturn(pagedMedicines);
+
+    // when
+    // then
+    String expected = objectMapper.writeValueAsString(pagedMedicines);
+    mockMvc.perform(get("/medicines"))
         .andExpect(status().isOk())
         .andExpect(content().string(expected));
   }
