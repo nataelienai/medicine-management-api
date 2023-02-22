@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.memory.projetoavaliacao.shared.exception.ErrorResponse;
+
 @WebMvcTest(AdverseReactionController.class)
 public class AdverseReactionControllerTest {
   @Autowired
@@ -105,6 +107,24 @@ public class AdverseReactionControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(serializedAdverseReactionDto))
         .andExpect(status().isCreated())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("POST /adverse-reactions should return 400 when given a null description")
+  void postAdverseReactionsShouldReturn400WhenGivenNullDescription() throws Exception {
+    // given
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto(null);
+    String serializedAdverseReactionDto = objectMapper.writeValueAsString(adverseReactionDto);
+
+    // when
+    // then
+    ErrorResponse errorResponse = new ErrorResponse(400, "The description field must not be blank");
+    String expected = objectMapper.writeValueAsString(errorResponse);
+    mockMvc.perform(post("/adverse-reactions")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedAdverseReactionDto))
+        .andExpect(status().isBadRequest())
         .andExpect(content().string(expected));
   }
 }
