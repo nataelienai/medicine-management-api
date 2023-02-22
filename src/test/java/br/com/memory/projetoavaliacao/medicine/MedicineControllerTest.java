@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +50,7 @@ public class MedicineControllerTest {
   void getMedicinesShouldReturn200AndPagedListOfMedicinesWhenGivenFilterAndPagination() throws Exception {
     // given
     Pageable pageable = PageRequest.of(0, 10);
-    List<Medicine> medicines = List.of(makeMedicine());
+    List<Medicine> medicines = List.of(makeMedicine(1L, 1L));
     Page<Medicine> pagedMedicines = new PageImpl<>(
         medicines,
         pageable,
@@ -76,7 +78,7 @@ public class MedicineControllerTest {
   void getMedicinesShouldReturn200AndPagedListOfMedicinesWhenNotGivenFilterAndPagination() throws Exception {
     // given
     Pageable pageable = PageRequest.of(0, 10);
-    List<Medicine> medicines = List.of(makeMedicine());
+    List<Medicine> medicines = List.of(makeMedicine(1L, 1L));
     Page<Medicine> pagedMedicines = new PageImpl<>(
         medicines,
         pageable,
@@ -90,6 +92,35 @@ public class MedicineControllerTest {
     String expected = objectMapper.writeValueAsString(pagedMedicines);
     mockMvc.perform(get("/medicines"))
         .andExpect(status().isOk())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("POST /medicines should return 201 and medicine when given valid input")
+  void postMedicinesShouldReturn201AndMedicineWhenGivenValidInput() throws Exception {
+    // given
+    Long manufacturerId = 1L;
+    Long adverseReactionId = 1L;
+    Medicine medicine = makeMedicine(manufacturerId, adverseReactionId);
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        medicine.getRegistrationNumber(),
+        medicine.getName(),
+        medicine.getExpirationDate(),
+        medicine.getCustomerServicePhone(),
+        medicine.getPrice(),
+        medicine.getAmountOfPills(),
+        manufacturerId,
+        Set.of(adverseReactionId));
+    when(medicineService.create(medicineCreationDto)).thenReturn(medicine);
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
+
+    // when
+    // then
+    String expected = objectMapper.writeValueAsString(medicine);
+    mockMvc.perform(post("/medicines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isCreated())
         .andExpect(content().string(expected));
   }
 
@@ -126,7 +157,7 @@ public class MedicineControllerTest {
         .andExpect(status().isNotFound());
   }
 
-  private Medicine makeMedicine() {
+  private Medicine makeMedicine(Long manufacturerId, Long adverseReactionId) {
     return new Medicine(
         "1.4444.4444.333-1",
         "medicine",
@@ -134,7 +165,7 @@ public class MedicineControllerTest {
         "(12)0000-0000",
         BigDecimal.valueOf(1),
         1,
-        new Manufacturer(1L, "Manufacturer"),
-        Set.of(new AdverseReaction(1L, "Strong reaction")));
+        new Manufacturer(manufacturerId, "Manufacturer"),
+        Set.of(new AdverseReaction(adverseReactionId, "Strong reaction")));
   }
 }
