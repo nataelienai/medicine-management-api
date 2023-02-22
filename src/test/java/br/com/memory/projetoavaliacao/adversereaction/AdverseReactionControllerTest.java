@@ -170,4 +170,21 @@ public class AdverseReactionControllerTest {
         .andExpect(content().string(expected));
   }
 
+  @Test
+  @DisplayName("PUT /adverse-reactions/{id} should return 400 when given a null description")
+  void putAdverseReactionsShouldReturn400WhenGivenNullDescription() throws Exception {
+    // given
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto(null);
+    String serializedAdverseReactionDto = objectMapper.writeValueAsString(adverseReactionDto);
+
+    // when
+    // then
+    ErrorResponse errorResponse = new ErrorResponse(400, "The description field must not be blank");
+    String expected = objectMapper.writeValueAsString(errorResponse);
+    mockMvc.perform(put("/adverse-reactions/{id}", 1L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedAdverseReactionDto))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(expected));
+  }
 }
