@@ -253,6 +253,20 @@ public class MedicineServiceTest {
     assertThat(updatedMedicine.getAdverseReactions().contains(adverseReaction)).isTrue();
   }
 
+  @Test
+  @DisplayName("deleteByRegistrationNumber() should throw when given a non-existent registration number")
+  void deleteByRegistrationNumberShouldThrowWhenGivenNonExistentRegistrationNumber() {
+    // given
+    String registrationNumber = "1.4444.4444.333-1";
+
+    // when
+    // then
+    assertThatThrownBy(() -> medicineService.deleteByRegistrationNumber(registrationNumber))
+        .isInstanceOf(ResourceNotFoundException.class);
+
+    verify(medicineRepository, never()).delete(any());
+  }
+
   private Manufacturer makeManufacturer() {
     return new Manufacturer(1L, "Manufacturer");
   }
