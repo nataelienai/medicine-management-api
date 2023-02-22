@@ -2,7 +2,10 @@ package br.com.memory.projetoavaliacao.adversereaction;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -224,5 +227,19 @@ public class AdverseReactionControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(serializedAdverseReactionDto))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("DELETE /adverse-reactions/{id} should return 204 when given valid id")
+  void deleteAdverseReactionShouldReturn204WhenGivenValidId() throws Exception {
+    // given
+    Long id = 1L;
+    doThrow(ResourceNotFoundException.class).when(adverseReactionService).deleteById(any());
+    doNothing().when(adverseReactionService).deleteById(id);
+
+    // when
+    // then
+    mockMvc.perform(delete("/adverse-reactions/{id}", id))
+        .andExpect(status().isNoContent());
   }
 }
