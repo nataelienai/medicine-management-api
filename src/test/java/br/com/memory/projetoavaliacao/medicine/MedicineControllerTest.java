@@ -111,6 +111,21 @@ public class MedicineControllerTest {
         .andExpect(status().isNoContent());
   }
 
+  @Test
+  @DisplayName("DELETE /medicines/{registrationNumber} should return 404 when given non-existent registration number")
+  void deleteMedicineShouldReturn404WhenGivenNonExistentRegistrationNumber() throws Exception {
+    // given
+    String registrationNumber = "1.4444.4444.333-1";
+    doThrow(ResourceNotFoundException.class)
+        .when(medicineService)
+        .deleteByRegistrationNumber(registrationNumber);
+
+    // when
+    // then
+    mockMvc.perform(delete("/medicines/{registrationNumber}", registrationNumber))
+        .andExpect(status().isNotFound());
+  }
+
   private Medicine makeMedicine() {
     return new Medicine(
         "1.4444.4444.333-1",
