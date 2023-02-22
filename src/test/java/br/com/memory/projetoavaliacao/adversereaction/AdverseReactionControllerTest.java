@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,6 +82,29 @@ public class AdverseReactionControllerTest {
     String expected = objectMapper.writeValueAsString(pagedAdverseReactions);
     mockMvc.perform(get("/adverse-reactions"))
         .andExpect(status().isOk())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("POST /adverse-reactions should return 201 and adverse reaction when given valid input")
+  void postAdverseReactionsShouldReturn201AndAdverseReactionWhenGivenValidInput() throws Exception {
+    // given
+    AdverseReaction adverseReaction = new AdverseReaction(1L, "Strong reaction");
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto(
+        adverseReaction.getDescription());
+
+    when(adverseReactionService.create(adverseReactionDto))
+        .thenReturn(adverseReaction);
+
+    String serializedAdverseReactionDto = objectMapper.writeValueAsString(adverseReactionDto);
+
+    // when
+    // then
+    String expected = objectMapper.writeValueAsString(adverseReaction);
+    mockMvc.perform(post("/adverse-reactions")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedAdverseReactionDto))
+        .andExpect(status().isCreated())
         .andExpect(content().string(expected));
   }
 }
