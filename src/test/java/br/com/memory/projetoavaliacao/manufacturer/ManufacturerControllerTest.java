@@ -1,5 +1,7 @@
 package br.com.memory.projetoavaliacao.manufacturer;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,13 +38,9 @@ public class ManufacturerControllerTest {
   @DisplayName("GET /manufacturers should return 200 and paged list of manufacturers when given filter and pagination")
   void getManufacturersShouldReturn200AndPagedListOfManufacturersWhenGivenFilterAndPagination() throws Exception {
     // given
-    List<Manufacturer> manufacturers = List.of(
-        new Manufacturer(1L, "Manufacturer"));
     Pageable pageable = PageRequest.of(0, 10);
-    Page<Manufacturer> pagedManufacturers = new PageImpl<>(
-        manufacturers,
-        pageable,
-        manufacturers.size());
+    List<Manufacturer> manufacturers = List.of(new Manufacturer(1L, "Manufacturer"));
+    Page<Manufacturer> pagedManufacturers = new PageImpl<>(manufacturers, pageable, manufacturers.size());
 
     when(manufacturerService.findAllBy("manu", pageable))
         .thenReturn(pagedManufacturers);
@@ -54,6 +52,25 @@ public class ManufacturerControllerTest {
         .param("name", "manu")
         .param("page", "0")
         .param("size", "10"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("GET /manufacturers should return 200 and paged list of manufacturers when not given filter and pagination")
+  void getManufacturersShouldReturn200AndPagedListOfManufacturersWhenNotGivenFilterAndPagination() throws Exception {
+    // given
+    Pageable pageable = PageRequest.of(0, 10);
+    List<Manufacturer> manufacturers = List.of(new Manufacturer(1L, "Manufacturer"));
+    Page<Manufacturer> pagedManufacturers = new PageImpl<>(manufacturers, pageable, manufacturers.size());
+
+    when(manufacturerService.findAllBy(eq(null), any(Pageable.class)))
+        .thenReturn(pagedManufacturers);
+
+    // when
+    // then
+    String expected = objectMapper.writeValueAsString(pagedManufacturers);
+    mockMvc.perform(get("/manufacturers"))
         .andExpect(status().isOk())
         .andExpect(content().string(expected));
   }
