@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -145,4 +146,28 @@ public class AdverseReactionControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(content().string(expected));
   }
+
+  @Test
+  @DisplayName("PUT /adverse-reactions/{id} should return 200 and updated adverse reaction when given valid input")
+  void putAdverseReactionsShouldReturn200AndUpdatedAdverseReactionWhenGivenValidInput() throws Exception {
+    // given
+    AdverseReaction adverseReaction = new AdverseReaction(1L, "Updated reaction");
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto(
+        adverseReaction.getDescription());
+
+    when(adverseReactionService.update(adverseReaction.getId(), adverseReactionDto))
+        .thenReturn(adverseReaction);
+
+    String serializedAdverseReactionDto = objectMapper.writeValueAsString(adverseReactionDto);
+
+    // when
+    // then
+    String expected = objectMapper.writeValueAsString(adverseReaction);
+    mockMvc.perform(put("/adverse-reactions/{id}", adverseReaction.getId())
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedAdverseReactionDto))
+        .andExpect(status().isOk())
+        .andExpect(content().string(expected));
+  }
+
 }
