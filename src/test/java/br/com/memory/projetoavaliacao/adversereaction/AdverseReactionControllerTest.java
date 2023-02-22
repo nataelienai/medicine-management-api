@@ -1,5 +1,7 @@
 package br.com.memory.projetoavaliacao.adversereaction;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,6 +55,30 @@ public class AdverseReactionControllerTest {
         .param("description", "strong")
         .param("page", "0")
         .param("size", "10"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("GET /adverse-reactions should return 200 and paged list of adverse reactions when not given filter and pagination")
+  void getAdverseReactionsShouldReturn200AndPagedListOfAdverseReactionsWhenNotGivenFilterAndPagination()
+      throws Exception {
+    // given
+    Pageable pageable = PageRequest.of(0, 10);
+    List<AdverseReaction> adverseReactions = List.of(
+        new AdverseReaction(1L, "Strong reaction"));
+    Page<AdverseReaction> pagedAdverseReactions = new PageImpl<>(
+        adverseReactions,
+        pageable,
+        adverseReactions.size());
+
+    when(adverseReactionService.findAllBy(eq(null), any(Pageable.class)))
+        .thenReturn(pagedAdverseReactions);
+
+    // when
+    // then
+    String expected = objectMapper.writeValueAsString(pagedAdverseReactions);
+    mockMvc.perform(get("/adverse-reactions"))
         .andExpect(status().isOk())
         .andExpect(content().string(expected));
   }
