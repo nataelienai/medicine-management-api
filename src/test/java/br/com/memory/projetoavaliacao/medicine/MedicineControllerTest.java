@@ -312,6 +312,26 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("POST /medicines should return 400 when given a negative price")
+  void postMedicinesShouldReturn400WhenGivenNegativePrice() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(-1),
+        1,
+        1L,
+        Set.of(1L));
+    // when
+    // then
+    assertThatPostMethodReturns400(
+        medicineCreationDto,
+        "The price field must not be negative");
+  }
+
+  @Test
   @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
   void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
     // given
