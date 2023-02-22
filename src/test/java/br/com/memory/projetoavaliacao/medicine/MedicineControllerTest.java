@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.memory.projetoavaliacao.adversereaction.AdverseReaction;
 import br.com.memory.projetoavaliacao.manufacturer.Manufacturer;
 import br.com.memory.projetoavaliacao.shared.exception.ErrorResponse;
+import br.com.memory.projetoavaliacao.shared.exception.ResourceAlreadyExistsException;
 import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
 
 @WebMvcTest(MedicineController.class)
@@ -446,7 +447,7 @@ public class MedicineControllerTest {
         Set.of(1L));
 
     when(medicineService.create(medicineCreationDto))
-      .thenThrow(ResourceNotFoundException.class);
+        .thenThrow(ResourceNotFoundException.class);
 
     String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
 
@@ -456,6 +457,33 @@ public class MedicineControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
         .content(serializedMedicineDto))
         .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("POST /medicines should return 409 when registration number already exists")
+  void postMedicinesShouldReturn400WhenGivenRegistrationNumberAlreadyExists() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.4444.4444.333-1",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+
+    when(medicineService.create(medicineCreationDto))
+        .thenThrow(ResourceAlreadyExistsException.class);
+
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
+
+    // when
+    // then
+    mockMvc.perform(post("/medicines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isConflict());
   }
 
   @Test
