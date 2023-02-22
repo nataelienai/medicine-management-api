@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.memory.projetoavaliacao.shared.exception.ErrorResponse;
+import br.com.memory.projetoavaliacao.shared.exception.ResourceNotFoundException;
 
 @WebMvcTest(AdverseReactionController.class)
 public class AdverseReactionControllerTest {
@@ -204,5 +205,24 @@ public class AdverseReactionControllerTest {
         .content(serializedAdverseReactionDto))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(expected));
+  }
+
+  @Test
+  @DisplayName("PUT /adverse-reactions/{id} should return 404 when given a non-existent id")
+  void putAdverseReactionsShouldReturn404WhenGivenNonExistentId() throws Exception {
+    // given
+    Long id = 1L;
+    AdverseReactionDto adverseReactionDto = new AdverseReactionDto("Updated reaction");
+
+    when(adverseReactionService.update(id, adverseReactionDto))
+        .thenThrow(ResourceNotFoundException.class);
+
+    String serializedAdverseReactionDto = objectMapper.writeValueAsString(adverseReactionDto);
+    // when
+    // then
+    mockMvc.perform(put("/adverse-reactions/{id}", id)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedAdverseReactionDto))
+        .andExpect(status().isNotFound());
   }
 }
