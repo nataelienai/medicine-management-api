@@ -219,6 +219,40 @@ public class MedicineServiceTest {
     verify(medicineRepository, never()).save(any());
   }
 
+  @Test
+  @DisplayName("update() should update a medicine when given an entirely valid input")
+  void updateShouldUpdateMedicineWhenGivenEntirelyValidInput() {
+    // given
+    Manufacturer manufacturer = makeManufacturer();
+    AdverseReaction adverseReaction = makeAdverseReaction();
+    Medicine medicine = makeMedicine(manufacturer, Set.of(adverseReaction));
+    String registrationNumber = medicine.getRegistrationNumber();
+    MedicineUpdateDto medicineUpdateDto = makeMedicineUpdateDto(
+        manufacturer.getId(),
+        Set.of(adverseReaction.getId()));
+
+    when(medicineRepository.findById(registrationNumber))
+        .thenReturn(Optional.of(medicine));
+    when(manufacturerRepository.findById(medicineUpdateDto.getManufacturerId()))
+        .thenReturn(Optional.of(manufacturer));
+    when(adverseReactionRepository.findAllById(medicineUpdateDto.getAdverseReactionIds()))
+        .thenReturn(List.of(adverseReaction));
+    when(medicineRepository.save(any(Medicine.class))).then(returnsFirstArg());
+
+    // when
+    Medicine updatedMedicine = medicineService.update(registrationNumber, medicineUpdateDto);
+
+    // then
+    assertThat(updatedMedicine).isNotNull();
+    assertThat(updatedMedicine)
+        .usingRecursiveComparison()
+        .ignoringExpectedNullFields()
+        .isEqualTo(medicineUpdateDto);
+    assertThat(updatedMedicine.getRegistrationNumber()).isEqualTo(registrationNumber);
+    assertThat(updatedMedicine.getManufacturer()).isEqualTo(manufacturer);
+    assertThat(updatedMedicine.getAdverseReactions().contains(adverseReaction)).isTrue();
+  }
+
   private Manufacturer makeManufacturer() {
     return new Manufacturer(1L, "Manufacturer");
   }
@@ -243,9 +277,9 @@ public class MedicineServiceTest {
     return new MedicineUpdateDto(
         "updated medicine",
         LocalDate.now(),
-        "(12)0000-0000",
-        BigDecimal.valueOf(1),
-        1,
+        "(12)1111-1111",
+        BigDecimal.valueOf(2),
+        2,
         manufacturerId,
         adverseReactionIds);
   }
