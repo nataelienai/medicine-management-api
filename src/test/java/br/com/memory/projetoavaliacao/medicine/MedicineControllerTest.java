@@ -180,6 +180,34 @@ public class MedicineControllerTest {
   }
 
   @Test
+  @DisplayName("POST /medicines should return 400 when given an invalid anvisa registration number")
+  void postMedicinesShouldReturn400WhenGivenInvalidAnvisaRegistrationNumber() throws Exception {
+    // given
+    MedicineCreationDto medicineCreationDto = new MedicineCreationDto(
+        "1.333.4444",
+        "medicine",
+        LocalDate.now(),
+        "(12)0000-0000",
+        BigDecimal.valueOf(1),
+        1,
+        1L,
+        Set.of(1L));
+    String serializedMedicineDto = objectMapper.writeValueAsString(medicineCreationDto);
+
+    // when
+    // then
+    ErrorResponse errorResponse = new ErrorResponse(400,
+        "The registrationNumber field has an invalid ANVISA registration number");
+    String expected = objectMapper.writeValueAsString(errorResponse);
+
+    mockMvc.perform(post("/medicines")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(serializedMedicineDto))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(expected));
+  }
+
+  @Test
   @DisplayName("DELETE /medicines/{registrationNumber} should return 204 when given valid registration number")
   void deleteMedicineShouldReturn204WhenGivenValidRegistrationNumber() throws Exception {
     // given
